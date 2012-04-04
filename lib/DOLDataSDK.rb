@@ -8,35 +8,35 @@ require 'json'
 module DOL
     API_URL = 'V1'
     API_VALID_ARGUMENTS = %w[top skip select orderby filter]
-    
+
     # This class handles storing the host, API key, and SharedSecret for your
     # DataRequest objects.  A DataContext is valid if it has values for host, key, and secret.
     class DataContext
         attr_accessor :host, :key, :secret, :url
-        
+
         def initialize host, key, secret
             @host, @key, @secret = host, key, secret
             @url = API_URL
         end
-        
+
         def valid?
             !!(@host and @key and @secret and @url)
         end
     end
-    
+
     # This class handles requesting data using the API.
     # All DataRequest objects must be initialized with a DataContext
     # that provides the DatRequest with a host, API key and SharedSecret.
     # After generating a request, call #call_api to submit it.
     class DataRequest
         attr_accessor :context
-        
+
         def initialize context
             @context = context
             @mutex = Mutex.new
             @active_requests = []
         end
-        
+
         # This method consturcts and submits the data request.
         # It calls the passed block when it completes, returning both a result and an error.
         # If error is not nil, there was an error during processing.
@@ -50,63 +50,67 @@ module DOL
                 block.call nil, 'A context object was not provided.'
                 return
             end
-            
+
             unless @context.valid?
                 block.call nil, 'A valid context object was not provided.'
                 return
             end
-            
+
             # Ensures only valid arguments are used
             query = []
             arguments.each_pair do |key, value|
-                if API_VALID_ARGUMENTS.member? key.to_s
-                    query << "$#{key}=#{URI.escape value.to_s}"
-                end
+              query << "#{key}=#{URI.escape value.to_s}"
             end
-            
+
             # Generates timestamp and url
             timestamp = DOL.timestamp
             url = URI.parse ["#{@context.host}/#{@context.url}/#{method}", query.join('&')].join '?'
-            
+
             # Creates a new thread, creates an authenticaed request, and requests data from the host
             @mutex.synchronize do
                 @active_requests << Thread.new do
                     request = Net::HTTP::Get.new [url.path, url.query].join '?'
-                    request.add_field 'Authorization', "Timestamp=#{timestamp}&ApiKey=#{@context.key}&Signature=#{signature timestamp, url}"
+                    header = "Timestamp=#{timestamp}&ApiKey=#{@context.key}&Signature=#{signature timestamp, url}"
+                    puts header
+                    request.add_field 'Authorization', header
                     request.add_field 'Accept', 'application/json'
+
+                    puts "Invoking #{url.inspect} and #{url.query}"
+
                     result = Net::HTTP.start url.host, url.port do |http|
                         http.request request
                     end
-                    
+
                     if result.is_a? Net::HTTPSuccess
                         result = JSON.parse(result.body)['d']
                         result = result['results'] if result.is_a? Hash
                         block.call result, nil
                     else
+                      puts result.inspect
                         block.call nil, "Error: #{result.message}"
                     end
-                    
+
                     @mutex.synchronize do
                         @active_requests.delete Thread.current
                     end
                 end
             end
         end
-        
+
         # Halts program until all ongoing requests sent by this DataRequest finish
         def wait_until_finished
             @active_requests.dup.each do |n|
                 n.join
             end
         end
-        
+
         private
         # Generates a signature using your SharedSecret and the request path
         def signature timestamp, url
             HMAC::SHA1.hexdigest @context.secret, [url.path, url.query + "&Timestamp=#{timestamp}&ApiKey=#{@context.key}"].join('?')
         end
     end
-    
+
     module_function
     def timestamp
         Time.now.utc.strftime "%Y-%m-%dT%H:%M:%SZ"

@@ -1,47 +1,55 @@
 .grid_12.content
+  .somespace
+  .push_9
+    .grid_3
+      %a.usdol{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Visit the Official US DOL Website
   .vspace
-  .grid_5
-    %span &nbsp;
-
-  .grid_6
-    %p=@description
-    %a{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Official US DOL Website
+  .clear
+  .push_7
+    .grid_5
+      %p.green=@description
 
   .clear
-  .somespace
+
+  .grid_5
+    %h3 For Students
+    %form#search_form{:action => "/search"}
+      %label Keyword
+      %input.search_box{:name =>"q", :type => "text", :value => params['q']}
+      %p.orange-button
+        %a{:href => "javascript:search();"} Find Summer Jobs
+
 
   .grid_6
-    %h3{:style => "margin-bottom: 0px"} Cloud Foundry Job Postings
+    %h3{:style => "margin-bottom: 0px"}=@title
     %span{:style => "font-style:italic; margin-top: 0px"}  with Job Posting Schema
     %ul{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
       -@jobs.each do |job|
         %li
           %strong{:itemtype => "title"}=job.title
           %span=job.description
+  .clear
 
-  .grid_5
-    %h3 For Students
-    %form{:action => "/search"}
-      %label Keyword
-      %input{:name =>"search", :type => "text"}
-      %input{:type =>"submit", :value => "Find Summer Jobs"}
-    %h3 For Employers
-    %ul
-      %li
-        %a{:href => "http://webapps.dol.gov/DOLEvents/Event/Register/17/Summer-Jobs-Commitment-Registration", :target => "_new"} Make a commitment and join the initiative by registering
-      / <li><a href="/summerjobs/newcommitmentsmessage.htm">Review our message for new commitments</a></li>
-      %li
-        %a{:href => "http://www.dol.gov/summerjobs/summerjobs/addingopportunities.htm"} Add your opportunities to the Summer Jobs+ Bank
-      %li
-        %a{:href => "http://www.dol.gov/summerjobs/summerjobs/employerfaqs.htm"} Review our Frequently Asked Questions
-      %li
-        %a{:href => "http://www.dol.gov/summerjobs/summerjobs/partners.htm"} See who's involved
-      %li
-        %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn more ways to provide opportunities for youth
-        (PDF)
-      %li Share Your Story
+  .employers
+    .grid_8
+      %h3 For Employers
+      %ul
+        %li
+          %a{:href => "http://webapps.dol.gov/DOLEvents/Event/Register/17/Summer-Jobs-Commitment-Registration", :target => "_new"} Register
+        %li
+          %a{:href => "http://www.dol.gov/summerjobs/summerjobs/addingopportunities.htm"} Add Jobs
+        %li
+          %a{:href => "http://www.dol.gov/summerjobs/summerjobs/employerfaqs.htm"} Answers
+        %li
+          %a{:href => "http://www.dol.gov/summerjobs/summerjobs/partners.htm"} Who Else ?
+        %li
+          %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn...
 
-
+  :javascript
+    function search() {
+      var form = document.getElementById("search_form");
+      form.submit();
+    }
 
 
 

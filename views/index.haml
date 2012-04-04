@@ -1,0 +1,47 @@
+.grid_12.content
+  .vspace
+  .grid_5
+    %span &nbsp;
+
+  .grid_6
+    %p=@description
+    %a{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Official US DOL Website
+
+  .clear
+  .somespace
+
+  .grid_6
+    %h3{:style => "margin-bottom: 0px"} Cloud Foundry Job Postings
+    %span{:style => "font-style:italic; margin-top: 0px"}  with Job Posting Schema
+    %ul{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
+      -@jobs.each do |job|
+        %li
+          %strong{:itemtype => "title"}=job.title
+          %span=job.description
+
+  .grid_5
+    %h3 For Students
+    %form{:action => "/search"}
+      %label Keyword
+      %input{:name =>"search", :type => "text"}
+      %input{:type =>"submit", :value => "Find Summer Jobs"}
+    %h3 For Employers
+    %ul
+      %li
+        %a{:href => "http://webapps.dol.gov/DOLEvents/Event/Register/17/Summer-Jobs-Commitment-Registration", :target => "_new"} Make a commitment and join the initiative by registering
+      / <li><a href="/summerjobs/newcommitmentsmessage.htm">Review our message for new commitments</a></li>
+      %li
+        %a{:href => "http://www.dol.gov/summerjobs/summerjobs/addingopportunities.htm"} Add your opportunities to the Summer Jobs+ Bank
+      %li
+        %a{:href => "http://www.dol.gov/summerjobs/summerjobs/employerfaqs.htm"} Review our Frequently Asked Questions
+      %li
+        %a{:href => "http://www.dol.gov/summerjobs/summerjobs/partners.htm"} See who's involved
+      %li
+        %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn more ways to provide opportunities for youth
+        (PDF)
+      %li Share Your Story
+
+
+
+
+

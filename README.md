@@ -7,9 +7,7 @@ It also showcases how to consume the the Jobs Bank API and allow visitors to per
 
 In this app we showcase how to find jobs for your Facebook friends who are in the right age group (16-24)
 
-For more information please read the White House's announcement
-
-http://www.whitehouse.gov/blog/2012/04/02/announcing-summer-jobs-code-sprint
+For more information please read the [White House's blog post](http://www.whitehouse.gov/blog/2012/04/02/announcing-summer-jobs-code-sprint)
 
 
 ## Functionality
@@ -54,6 +52,7 @@ Then start the app with
 ## Developer Resources
 
 - [Register App and get API keys](https://webapps.dol.gov/developer)
+- [Summer Jobs API Docs](http://developer.dol.gov/DOL-SUMMERJOBS-SERVICE.htm)
 - [Job Schema](http://www.schema.org/JobPosting)
 - [Test your microdata markup](http://www.google.com/webmasters/tools/richsnippets)
 

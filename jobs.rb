@@ -5,7 +5,8 @@ require "sinatra/url_for"
 require_relative "lib/DOLDataSDK"
 
 before do
-
+  @appid = ENV['facebook_app_id']
+  @description = "A new call-to-action for businesses, non-profits, and government to provide pathways to employment for low-income and disconnected youth in the summer of 2012"
 end
 
 get "/" do
@@ -28,10 +29,15 @@ get "/" do
   end
 
   @full_url = url_for("/", :full)
-  @description = "A new call-to-action for businesses, non-profits, and government to provide pathways to employment for low-income and disconnected youth in the summer of 2012"
   @image = url_for("/images/me.png", :full)
   @title = "Summer Jobs+ 2012"
-  @appid = ENV['facebook_app_id']
+  haml :index
+end
+
+get "/search" do
+  @full_url = url_for("/search", :full)
+  @title = "Search results for #{params['q']}"
+  @jobs = []
   haml :index
 end
 

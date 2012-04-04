@@ -379,6 +379,7 @@ strong {
 body {
   min-width: 960px;
   background-color: #55c0c7;
+  color: #444;
   font-family: 'Helvetica Neue', "Helvetica Neue Light", Helvetica;
 }
 
@@ -403,7 +404,7 @@ body {
 .usdol {
     margin-top: -30px;
     color: white;
-    background-color: #2572eb;
+    background-color: #0792d9;
     display: block;
     padding: 10px;
     border-top-left-radius: 3px;
@@ -411,7 +412,7 @@ body {
 }
 
 p.green {
-    background-color: #7ac730;
+    background-color: #78c22e;
     color:white;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
@@ -419,16 +420,45 @@ p.green {
     font-style: italic;
 }
 
+.search_box {
+    width: 200px;
+}
+
+
+.employers h3{
+    font-style: italic;
+    margin-bottom: 40px;
+}
+
+.employers ul li {
+    display: inline;
+    float: left;
+    padding-right: 1px;
+    margin: 0px;
+}
+
+.employers ul li a {
+    color: #fff;
+    font-weight: bolder;
+    background-color: #f0ca27;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+}
+
 /* Fancy Buttons */
 p.orange-button {
-    margin: 50px 0 10px 0;
+    margin: 10px 0 10px 0;
 }
 .orange-button a {
     position: relative;
     display: inline-block;
-    padding: 18px 20px;
+    padding: 8px 10px;
     color: #fff;
-    font-size: 24px;
+    font-size: 16px;
     text-align: center;
     border: 1px solid #813516;
     -webkit-border-radius: 6px;

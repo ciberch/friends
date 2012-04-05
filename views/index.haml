@@ -22,12 +22,16 @@
   .grid_6
     %h3{:style => "margin-bottom: 0px"}=@title
     %span{:style => "font-style:italic; margin-top: 0px"}  with Job Posting Schema
-    %ul{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
+    %ul
       -@jobs.each do |job|
-        %li
-          %a{:href =>job.url}
+        %li{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
+          %meta{:itemprop=>"specialCommitments", :content=> job.specialcommitments}
+          %a{:itemprop => "url", :href =>job.url}
             %strong{:itemtype => "title"}=job.title
           %span{:itemprop => "description"}=job.description
+          %p.datetime
+            %label Date Posted:
+            %span{:itemprop => "datePosted"}=job.dateposted
   .clear
 
   .employers

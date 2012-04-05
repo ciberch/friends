@@ -50,4 +50,4 @@ DEPENDENCIES
   redis
   ruby-hmac
   sinatra
-  vmc (= 0.3.16.beta.5)
+  vmc (~> 0.3.16.beta.5)

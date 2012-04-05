@@ -1,7 +1,7 @@
 ---
 applications:
   .:
-    name: summerjobs
+    name: summer
     framework:
       name: sinatra
       info:

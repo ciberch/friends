@@ -26,7 +26,7 @@ This template uses:
 
 ## To deploy on Cloud Foundry
 
-Get an account at [https://my.cloudfoundry.com/signup/summerjobs](https://my.cloudfoundry.com/signup/summerjobs)
+You can get an account at [https://my.cloudfoundry.com/signup/summerjobs](https://my.cloudfoundry.com/signup/summerjobs) if you don't have one
 
 First fork the project. Then run:
 

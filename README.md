@@ -30,7 +30,7 @@ First fork the project. Then run:
 
 ``` bash
 git clone git@github.com:<your_name>/summerjobs.git summerjobs
-cd mycf
+cd summerjobs
 bundle install;bundle package
 vmc push --nostart
 ```

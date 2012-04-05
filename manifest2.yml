@@ -2,13 +2,13 @@
 applications:
   .:
     name: summer
+    url: ${name}.${target-base}
     framework:
-      name: sinatra
+      name: rack
       info:
         mem: 128M
-        description: Sinatra Application
-        exec: ruby jobs.rb
-    url: ${name}.${target-base}
+        description: Rack Application
+        exec:
     mem: 128M
     instances: 1
     services:

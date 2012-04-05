@@ -26,6 +26,8 @@ This template uses:
 
 ## To deploy on Cloud Foundry
 
+Get an account at https://my.cloudfoundry.com/signup/summerjobs
+
 First fork the project. Then run:
 
 ``` bash

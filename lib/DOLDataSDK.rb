@@ -71,23 +71,23 @@ module DOL
                 @active_requests << Thread.new do
                     request = Net::HTTP::Get.new [url.path, url.query].join '?'
                     header = "Timestamp=#{timestamp}&ApiKey=#{@context.key}&Signature=#{signature timestamp, url}"
-                    puts header
+                    puts "******* #{header}"
                     request.add_field 'Authorization', header
                     request.add_field 'Accept', 'application/json'
 
-                    puts "Invoking #{url.inspect} and #{url.query}"
+                    puts "*********Invoking #{url.inspect} and #{url.query}"
 
                     result = Net::HTTP.start url.host, url.port do |http|
-                        http.request request
+                      http.request request
                     end
 
                     if result.is_a? Net::HTTPSuccess
-                        result = JSON.parse(result.body)['d']
-                        result = result['results'] if result.is_a? Hash
-                        block.call result, nil
+                      result = JSON.parse(result.body)['d']
+                      result = result['results'] if result.is_a? Hash
+                      block.call result, nil
                     else
                       puts result.inspect
-                        block.call nil, "Error: #{result.message}"
+                      block.call nil, "Error: #{result.message}"
                     end
 
                     @mutex.synchronize do

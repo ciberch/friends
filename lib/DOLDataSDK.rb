@@ -16,12 +16,12 @@ module DOL
         attr_accessor :host, :key, :secret, :url
 
         def initialize host, key, secret
-            @host, @key, @secret = host, key, secret
-            @url = API_URL
+          @host, @key, @secret = host, key, secret
+          @url = API_URL
         end
 
         def valid?
-            !!(@host and @key and @secret and @url)
+          !!(@host and @key and @secret and @url)
         end
     end
 
@@ -48,30 +48,23 @@ module DOL
         def call_api method, arguments = {}, &block
             # Ensures only a valid DataContext is used
             unless @context.is_a? DataContext
-                block.call nil, 'A context object was not provided.'
-                return
+              block.call nil, 'A context object was not provided.'
+              return
             end
 
             unless @context.valid?
-                block.call nil, 'A valid context object was not provided.'
-                return
+              block.call nil, 'A valid context object was not provided.'
+              return
             end
 
-            # Ensures only valid arguments are used
-            query = []
-            arguments.each_pair do |key, value|
-              query << "#{key}=#{CGI::escape value.to_s}"
-            end
-
-            # Generates timestamp and url
+            url = get_url(method, arguments)
             timestamp = DOL.timestamp
-            url = URI.parse ["#{@context.host}/#{@context.url}/#{method}", query.join('&')].join '?'
 
-            # Creates a new thread, creates an authenticaed request, and requests data from the host
+            # Creates a new thread, creates an authenticated request, and requests data from the host
             @mutex.synchronize do
                 @active_requests << Thread.new do
                     request = Net::HTTP::Get.new [url.path, url.query].join '?'
-                    header = "Timestamp=#{timestamp}&ApiKey=#{@context.key}&Signature=#{signature timestamp, url}"
+                    header = get_header(url,timestamp)
                     request.add_field 'Authorization', header
                     request.add_field 'Accept', 'application/json'
 
@@ -85,7 +78,7 @@ module DOL
                       clean = clean.gsub /\"\"\{/, "{"
                       clean = clean.gsub /}\"\"/, "}"
                       #clean = clean.gsub /\\\\u/, "\u"
-                      puts clean
+                      #puts clean
 
                       result = []
                       begin
@@ -109,21 +102,35 @@ module DOL
 
         # Halts program until all ongoing requests sent by this DataRequest finish
         def wait_until_finished
-            @active_requests.dup.each do |n|
-                n.join
-            end
+          @active_requests.dup.each do |n|
+            n.join
+          end
         end
 
         private
         # Generates a signature using your SharedSecret and the request path
         def signature timestamp, url
-            HMAC::SHA1.hexdigest @context.secret, [url.path, url.query + "&Timestamp=#{timestamp}&ApiKey=#{@context.key}"].join('?')
+          HMAC::SHA1.hexdigest @context.secret, [url.path, url.query + "&Timestamp=#{timestamp}&ApiKey=#{@context.key}"].join('?')
+        end
+
+        def get_url(method, arguments)
+          # Ensures only valid arguments are used
+          query = []
+          arguments.each_pair do |key, value|
+            query << "#{key}=#{CGI::escape value.to_s}"
+          end
+          url = URI.parse ["#{@context.host}/#{@context.url}/#{method}", query.join('&')].join '?'
+        end
+
+        def get_header(url, timestamp)
+          # Generates timestamp and url
+          "Timestamp=#{timestamp}&ApiKey=#{@context.key}&Signature=#{signature timestamp, url}"
         end
     end
 
-    module_function
-    def timestamp
-        Time.now.utc.strftime "%Y-%m-%dT%H:%M:%SZ"
+    def self.timestamp
+      t = Time.now
+      t.utc.strftime "%Y-%m-%dT%H:%M:%SZ"
     end
 end
 

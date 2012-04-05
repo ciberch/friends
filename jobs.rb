@@ -6,9 +6,11 @@ require_relative "lib/DOLDataSDK"
 
 helpers do
 
-  def get_jobs(query)
+  def get_jobs(query='vmware')
     @jobs = []
-    options = {:format => "'json'", :query => "'#{query}'", :region => "", :locality => "", :skipCount => 1}
+    page = params['page'].to_i || 1
+    page = 1 if page < 1
+    options = {:format => "'json'", :query => "'#{query}'", :region => "", :locality => "", :skipCount => 1 + (10 * (page-1))}
 
     @dol_request.call_api('SummerJobs/getJobsListing', options) do |results, error|
       if error
@@ -36,7 +38,7 @@ before do
 end
 
 get "/" do
-  @jobs = get_jobs("Developer")
+  @jobs = get_jobs()
 
   @full_url = url_for("/", :full)
   @image = url_for("/images/me.png", :full)
@@ -45,13 +47,17 @@ get "/" do
 end
 
 get "/search" do
-
   @full_url = url_for("/search", :full)
   @title = "Search results for #{params['q']}"
-
   @jobs = get_jobs(params['q'])
-
   haml :index
+end
+
+get "/search.json" do
+  @full_url = url_for("/search", :full)
+  @title = "Search results for #{params['q']}"
+  @jobs = get_jobs(params['q'])
+  @jobs.to_json
 end
 
 

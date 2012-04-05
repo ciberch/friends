@@ -4,6 +4,30 @@ require "hashie/mash"
 require "sinatra/url_for"
 require_relative "lib/DOLDataSDK"
 
+helpers do
+
+  def get_jobs(query)
+    @jobs = []
+    options = {:format => "'json'", :query => "'#{query}'", :region => "", :locality => "", :skipCount => 1}
+
+    @dol_request.call_api('SummerJobs/getJobsListing', options) do |results, error|
+      if error
+        puts error
+      else
+        results.each do |n|
+          n['pagemap']['jobposting'].each_with_index do |job, i|
+            job[:url] = n['pagemap']['article'][i]['url'] rescue n['link']
+            @jobs << Hashie::Mash.new(job)
+          end
+        end
+      end
+    end
+    @dol_request.wait_until_finished
+    @jobs
+  end
+
+end
+
 before do
   @appid = ENV['facebook_app_id']
   @description = "A new call-to-action for businesses, non-profits, and government to provide pathways to employment for low-income and disconnected youth in the summer of 2012"
@@ -12,20 +36,7 @@ before do
 end
 
 get "/" do
-  @jobs = []
-  options = {:format => 'json', :query => 'Developer', :region => '94107', :locality => 'San Francisco', :skipCount => 1}
-
-  @dol_request.call_api('SummerJobs/getJobsListing', options) do |results, error|
-    if error
-      puts error
-    else
-      results.each do |n|
-          @jobs << Hashie::Mash.new(n)
-      end
-    end
-  end
-  @dol_request.wait_until_finished
-
+  @jobs = get_jobs("Developer")
 
   @full_url = url_for("/", :full)
   @image = url_for("/images/me.png", :full)
@@ -34,21 +45,11 @@ get "/" do
 end
 
 get "/search" do
+
   @full_url = url_for("/search", :full)
   @title = "Search results for #{params['q']}"
-  @jobs = []
-  options = {:format => 'json', :query => params['q'], :region => '94107', :locality => 'San Francisco', :skipCount => 1}
 
-  @dol_request.call_api('SummerJobs/getJobsListing', options) do |results, error|
-    if error
-      puts error
-    else
-      results.each do |n|
-        @jobs << Hashie::Mash.new(n)
-      end
-    end
-  end
-  @dol_request.wait_until_finished
+  @jobs = get_jobs(params['q'])
 
   haml :index
 end

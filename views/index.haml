@@ -19,15 +19,15 @@
       %p.orange-button
         %a{:href => "javascript:search();"} Find Summer Jobs
 
-
   .grid_6
     %h3{:style => "margin-bottom: 0px"}=@title
     %span{:style => "font-style:italic; margin-top: 0px"}  with Job Posting Schema
     %ul{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
       -@jobs.each do |job|
         %li
-          %strong{:itemtype => "title"}=job.title
-          %span=job.description
+          %a{:href =>job.url}
+            %strong{:itemtype => "title"}=job.title
+          %span{:itemprop => "description"}=job.description
   .clear
 
   .employers

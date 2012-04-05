@@ -4,6 +4,7 @@ require 'uri'
 require 'thread'
 require 'hmac-sha1'
 require 'json'
+require "cgi/util"
 
 module DOL
     API_URL = 'V1'
@@ -59,7 +60,7 @@ module DOL
             # Ensures only valid arguments are used
             query = []
             arguments.each_pair do |key, value|
-              query << "#{key}=#{URI.escape value.to_s}"
+              query << "#{key}=#{CGI::escape value.to_s}"
             end
 
             # Generates timestamp and url
@@ -71,19 +72,28 @@ module DOL
                 @active_requests << Thread.new do
                     request = Net::HTTP::Get.new [url.path, url.query].join '?'
                     header = "Timestamp=#{timestamp}&ApiKey=#{@context.key}&Signature=#{signature timestamp, url}"
-                    puts "******* #{header}"
                     request.add_field 'Authorization', header
                     request.add_field 'Accept', 'application/json'
 
-                    puts "*********Invoking #{url.inspect} and #{url.query}"
-
-                    result = Net::HTTP.start url.host, url.port do |http|
+                    result = Net::HTTP.start(url.host, url.port) do |http|
                       http.request request
                     end
 
                     if result.is_a? Net::HTTPSuccess
-                      result = JSON.parse(result.body)['d']
-                      result = result['results'] if result.is_a? Hash
+                      clean = result.body.gsub(/\\+"/, '"')
+                      clean = clean.gsub /\\+n/, ""
+                      clean = clean.gsub /\"\"\{/, "{"
+                      clean = clean.gsub /}\"\"/, "}"
+                      #clean = clean.gsub /\\\\u/, "\u"
+                      puts clean
+
+                      result = []
+                      begin
+                        result = JSON.parse(clean)
+                        result = result['d']['getJobsListing']['items']
+                      rescue Exception => ex
+                        puts "Invalid format for #{clean} got error parsing it #{ex}"
+                      end
                       block.call result, nil
                     else
                       puts result.inspect

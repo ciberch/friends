@@ -1,13 +1,16 @@
---- 
-applications: 
-  .: 
+---
+applications:
+  .:
     name: summerjobs
-    framework: 
+    framework:
       name: sinatra
-      info: 
+      info:
         mem: 128M
         description: Sinatra Application
         exec: ruby jobs.rb
     url: ${name}.${target-base}
     mem: 128M
     instances: 1
+    services:
+      redis-www-cache:
+        type: redis

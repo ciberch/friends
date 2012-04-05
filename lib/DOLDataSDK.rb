@@ -30,7 +30,7 @@ module DOL
     # that provides the DatRequest with a host, API key and SharedSecret.
     # After generating a request, call #call_api to submit it.
     class DataRequest
-        attr_accessor :context
+        attr_accessor :context, :redis
 
         def initialize context
             @context = context
@@ -60,44 +60,65 @@ module DOL
             url = get_url(method, arguments)
             timestamp = DOL.timestamp
 
+            redis_key = redis_cache_key(url)
+
             # Creates a new thread, creates an authenticated request, and requests data from the host
             @mutex.synchronize do
-                @active_requests << Thread.new do
-                    request = Net::HTTP::Get.new [url.path, url.query].join '?'
-                    header = get_header(url,timestamp)
-                    request.add_field 'Authorization', header
-                    request.add_field 'Accept', 'application/json'
+              @active_requests << Thread.new do
+                clean = nil
 
-                    result = Net::HTTP.start(url.host, url.port) do |http|
-                      http.request request
-                    end
-
-                    if result.is_a? Net::HTTPSuccess
-                      clean = result.body.gsub(/\\+"/, '"')
-                      clean = clean.gsub /\\+n/, ""
-                      clean = clean.gsub /\"\"\{/, "{"
-                      clean = clean.gsub /}\"\"/, "}"
-                      #clean = clean.gsub /\\\\u/, "\u"
-                      #puts clean
-
-                      result = []
-                      begin
-                        result = JSON.parse(clean)
-                        result = result['d']['getJobsListing']['items']
-                      rescue Exception => ex
-                        puts "Invalid format for #{clean} got error parsing it #{ex}"
-                      end
-                      block.call result, nil
-                    else
-                      puts result.inspect
-                      block.call nil, "Error: #{result.message}"
-                    end
-
-                    @mutex.synchronize do
-                        @active_requests.delete Thread.current
-                    end
+                if @redis and @redis.exists(redis_key)
+                  clean = @redis.get(redis_key)
                 end
-            end
+
+                unless clean
+                  request = Net::HTTP::Get.new [url.path, url.query].join '?'
+                  header = get_header(url,timestamp)
+                  request.add_field 'Authorization', header
+                  request.add_field 'Accept', 'application/json'
+
+                  result = Net::HTTP.start(url.host, url.port) do |http|
+                    http.request request
+                  end
+
+                  if result.is_a? Net::HTTPSuccess
+                    clean = result.body.gsub(/\\+"/, '"')
+                    clean = clean.gsub /\\+n/, ""
+                    clean = clean.gsub /\"\"\{/, "{"
+                    clean = clean.gsub /}\"\"/, "}"
+                    #clean = clean.gsub /\\\\u/, "\u"
+                    #puts clean
+
+                    if @redis
+                      @redis.set(redis_key, clean)
+                      @redis.expire(redis_key, 60 * 15)
+                    end
+
+                  else
+                    clean = nil
+                    AppConfig.logger.error(result.inspect)
+                    block.call nil, "Error: #{result.message}"
+                  end
+                end
+
+                result = []
+                begin
+                  if clean
+                    result = JSON.parse(clean)
+                    result = result['d']['getJobsListing']['items']
+                  end
+                rescue Exception => ex
+                  AppConfig.logger.error("Invalid format for #{clean} got error parsing it #{ex}")
+                  @redis.delete(redis_key) if @redis
+                end
+                block.call result, nil
+
+                @mutex.synchronize do
+                    @active_requests.delete Thread.current
+                end
+              end
+          end
+
         end
 
         # Halts program until all ongoing requests sent by this DataRequest finish
@@ -126,6 +147,11 @@ module DOL
           # Generates timestamp and url
           "Timestamp=#{timestamp}&ApiKey=#{@context.key}&Signature=#{signature timestamp, url}"
         end
+
+      def redis_cache_key(url)
+        [url.path, url.query].join '?'
+      end
+
     end
 
     def self.timestamp

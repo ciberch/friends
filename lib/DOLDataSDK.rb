@@ -38,7 +38,7 @@ module DOL
             @active_requests = []
         end
 
-        # This method consturcts and submits the data request.
+        # This method constructs and submits the data request.
         # It calls the passed block when it completes, returning both a result and an error.
         # If error is not nil, there was an error during processing.
         # The request is submitted in another thread, so call #wait_until_finished to ensure
@@ -72,46 +72,51 @@ module DOL
                 end
 
                 unless clean
-                  request = Net::HTTP::Get.new [url.path, url.query].join '?'
-                  header = get_header(url,timestamp)
-                  request.add_field 'Authorization', header
-                  request.add_field 'Accept', 'application/json'
+                  begin
+                    request = Net::HTTP::Get.new [url.path, url.query].join '?'
+                    header = get_header(url,timestamp)
+                    request.add_field 'Authorization', header
+                    request.add_field 'Accept', 'application/json'
 
-                  result = Net::HTTP.start(url.host, url.port) do |http|
-                    http.request request
-                  end
-
-                  if result.is_a? Net::HTTPSuccess
-                    clean = result.body.gsub(/\\+"/, '"')
-                    clean = clean.gsub /\\+n/, ""
-                    clean = clean.gsub /\"\"\{/, "{"
-                    clean = clean.gsub /}\"\"/, "}"
-                    #clean = clean.gsub /\\\\u/, "\u"
-                    #puts clean
-
-                    if @redis
-                      @redis.set(redis_key, clean)
-                      @redis.expire(redis_key, 60 * 15)
+                    result = Net::HTTP.start(url.host, url.port) do |http|
+                      http.request request
                     end
 
-                  else
-                    clean = nil
-                    AppConfig.logger.error(result.inspect)
-                    block.call nil, "Error: #{result.message}"
+                    if result.is_a? Net::HTTPSuccess
+                      clean = result.body.gsub(/\\+"/, '"')
+                      clean = clean.gsub /\\+n/, ""
+                      clean = clean.gsub /\"\"\{/, "{"
+                      clean = clean.gsub /}\"\"/, "}"
+                      #clean = clean.gsub /\\\\u/, "\u"
+                      #puts clean
+
+                      cache_response = true
+
+                    else
+                      clean = nil
+                      AppConfig.logger.error("Error in API response #{result.message}")
+                      block.call nil, "Error: #{result.message}"
+                    end
+                  rescue Exception => ex
+                    AppConfig.logger.error("Error making API call due to #{ex}")
                   end
                 end
 
-                result = []
+                results = []
                 begin
                   if clean
-                    result = JSON.parse(clean)
-                    result = result['d']['getJobsListing']['items']
+                    results = JSON.parse(clean)
+                    results = results['d']['getJobsListing']['items']
+                    results ||= []
+                    if cache_response and @redis
+                      @redis.set(redis_key, clean)
+                      @redis.expire(redis_key, 60 * 30)
+                    end
                   end
                 rescue Exception => ex
                   AppConfig.logger.error("Invalid format for #{clean} got error parsing it #{ex}")
-                  @redis.delete(redis_key) if @redis
                 end
-                block.call result, nil
+                block.call results, nil
 
                 @mutex.synchronize do
                     @active_requests.delete Thread.current

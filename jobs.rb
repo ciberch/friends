@@ -75,7 +75,7 @@ class SummerJobsApp < Sinatra::Base
     @jobs = get_jobs()
 
     @full_url = url_for("/", :full)
-    @image = url_for("/images/me.png", :full)
+    @image = url_for("/images/summerjobs.png", :full)
     @title = "Summer Jobs+ 2012"
     haml :index
   end

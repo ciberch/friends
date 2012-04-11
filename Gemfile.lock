@@ -6,13 +6,22 @@ GEM
       hashie
     emk-sinatra-url-for (0.2.1)
       sinatra (>= 0.9.1.1)
+    faraday (0.7.6)
+      addressable (~> 2.2)
+      multipart-post (~> 1.1)
+      rack (~> 1.1)
     haml (3.1.4)
     hashie (1.2.0)
     interact (0.4.2)
     json (1.6.6)
     json_pure (1.6.6)
+    koala (1.4.0)
+      faraday (~> 0.7.0)
+      multi_json (~> 1.0)
     logger (1.2.8)
     mime-types (1.18)
+    multi_json (1.2.0)
+    multipart-post (1.1.5)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
@@ -46,6 +55,7 @@ DEPENDENCIES
   haml
   hashie
   json
+  koala
   logger
   redis
   ruby-hmac

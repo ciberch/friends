@@ -6,6 +6,7 @@ gem "json"
 gem "haml"
 gem "hashie"
 gem "emk-sinatra-url-for"
+gem "koala"
 
 gem "logger"
 gem "redis"

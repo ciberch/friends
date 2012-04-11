@@ -1,7 +1,7 @@
 ---
 applications:
   .:
-    name: summerjobs
+    name: friends
     url: ${name}.${target-base}
     framework:
       name: rack

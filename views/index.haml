@@ -12,8 +12,13 @@
   .clear
 
   .grid_5
-    %h3 For Students
     %form#search_form{:action => "/search"}
+      %h3 For Me
+      %span=@user.inspect
+      %h3 For My Friends
+      -@friends.each do |friend|
+        %span=friend.inspect
+
       %label Keyword
       %input.search_box{:name =>"q", :type => "text", :value => params['q']}
       %p.orange-button
@@ -41,11 +46,11 @@
         %li
           %a{:href => "http://webapps.dol.gov/DOLEvents/Event/Register/17/Summer-Jobs-Commitment-Registration", :target => "_new"} Register
         %li
-          %a{:href => "http://www.dol.gov/summerjobs/summerjobs/addingopportunities.htm"} Add Jobs
+          %a{:href => "http://www.dol.gov/summerjobs/addingopportunities.htm"} Add Jobs
         %li
-          %a{:href => "http://www.dol.gov/summerjobs/summerjobs/employerfaqs.htm"} Answers
+          %a{:href => "http://www.dol.gov/summerjobs/employerfaqs.htm"} Answers
         %li
-          %a{:href => "http://www.dol.gov/summerjobs/summerjobs/partners.htm"} Who Else ?
+          %a{:href => "http://www.dol.gov/summerjobs/partners.htm"} Who Else ?
         %li
           %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn...
 

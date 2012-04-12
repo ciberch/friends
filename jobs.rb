@@ -1,4 +1,5 @@
 require "sinatra/base"
+require "thin"
 require "json"
 require "hashie/mash"
 require "sinatra/url_for"
@@ -19,9 +20,17 @@ AppConfig.logger = Logger.new(STDOUT)
 
 class SummerJobsApp < Sinatra::Base
   LOCAL_REDIS = {host: "127.0.0.1", port: "6379"}
-  FACEBOOK_SCOPE = 'user_location,user_birthday,user_about_me,friends_location, friends_about_me,friends_birthday, publish_actions'
+  FACEBOOK_SCOPE = 'user_location, user_birthday, user_about_me, friends_location, friends_about_me, friends_birthday, publish_actions, friends_interests, friends_work_history, user_work_history'
 
   helpers Sinatra::UrlForHelper
+
+  host = CloudFoundry::Environment.redis_cnx ? CloudFoundry::Environment.redis_cnx.host : LOCAL_REDIS[:host]
+  port = CloudFoundry::Environment.redis_cnx ? CloudFoundry::Environment.redis_cnx.port : LOCAL_REDIS[:port]
+
+  use Rack::Session::Cookie, :key => 'rack.session',
+                             :path => '/',
+                             :expire_after => 2592000, # In seconds
+                             :secret => 'always happy'
 
   def initialize
     super
@@ -40,15 +49,8 @@ class SummerJobsApp < Sinatra::Base
   end
 
   configure do
-    set(:protection, :except => :frame_options)
-    enable :sessions
-  end
-
-
-  # the facebook session expired! reset ours and restart the process
-  error(Koala::Facebook::APIError) do
-    session[:access_token] = nil
-    redirect "/auth/facebook"
+    #enable :sessions
+    set(:protection, :except => [:frame_options,  :session_hijacking] )
   end
 
   helpers do
@@ -65,6 +67,9 @@ class SummerJobsApp < Sinatra::Base
           results.each do |n|
             n['pagemap']['jobposting'].each_with_index do |job, i|
               job[:url] = n['pagemap']['article'][i]['url'] rescue n['link']
+              job.keys.each do |key|
+                job[key] = job[key].gsub(/\\u0027/, "'")
+              end
               @jobs << Hashie::Mash.new(job)
             end
           end
@@ -74,21 +79,40 @@ class SummerJobsApp < Sinatra::Base
       @jobs
     end
 
+    def session
+      env['rack.session']
+    end
+
+    def session=(val)
+      env['rack.session'] = val
+    end
+
+    def host
+      request.host
+    end
 
      def scheme
        request.scheme
      end
 
      def url_no_scheme(path = '')
-       "//#{CloudFoundry::Environment.host}#{path}"
+       "//#{host}#{path}"
      end
 
      def url(path = '')
-       "#{scheme}://#{CloudFoundry::Environment.host}#{path}"
+       "#{scheme}://#{host}#{path}"
      end
 
     def authenticator
       @authenticator ||= Koala::Facebook::OAuth.new(@appid, @appsecret, url("/auth/facebook/callback"))
+    end
+
+    def add_job_string!(user_hash)
+      if user_hash and user_hash["work"] and user_hash["work"].count > 0
+        job1 = user_hash["work"].first
+        user_hash["job"] = job1["position"] ? job1["position"]["name"] + " @ " : ""
+        user_hash["job"] += job1["employer"]["name"]
+      end
     end
   end
 
@@ -110,18 +134,42 @@ class SummerJobsApp < Sinatra::Base
   end
 
   get "/" do
-    if session[:access_token]
-      @logger.info("We have an access token")
-      @graph  = Koala::Facebook::API.new(session[:access_token])
+    @friends = []
+    @user = nil
+
+    if session and session["access_token"]
+      @graph  = Koala::Facebook::API.new(session["access_token"])
       @user    = @graph.get_object("me")
-      logger.info("User is #{@user.inspect}")
-      @friends = @graph.get_connections('me', 'friends')
-      logger.info("Friends are #{@friends.inspect}")
+      add_job_string!(@user)
+      friends_key = "facebook/#{@user["id"]}/friends"
+      friends_fql = nil
+      if @redis.exists(friends_key)
+        friends_fql = JSON.parse(@redis.get(friends_key))
+      else
+        friends_fql = @graph.fql_query('SELECT current_location, work, uid, name, birthday_date, is_app_user, pic_square FROM user WHERE (uid IN (SELECT uid2 FROM friend WHERE uid1 = me())) order by name')
+        @redis.set(friends_key, friends_fql.to_json)
+      end
+      @friends = []
+      @older_friends = []
+      friends_fql.each do |friend|
+        if friend["birthday_date"] =~ /\d\d\/\d\d\/(\d\d\d\d)/
+          year = $1.to_i
+          add_job_string!(friend)
+          if friend["current_location"]
+            friend["location"] = "#{friend['current_location']['city']}, #{friend['current_location']['state']}"
+          end
+          if DateTime.now.year - year < 30
+            @friends << friend
+          else
+            @older_friends << friend
+          end
+        end
+      end
       # query jobs for friends
       @jobs = get_jobs()
     else
       @logger.info("We dont have an access token")
-      @jobs = get_jobs()
+      redirect "/auth/facebook"
     end
 
     @full_url = url_for("/", :full)
@@ -144,23 +192,19 @@ class SummerJobsApp < Sinatra::Base
     @jobs.to_json
   end
 
-  # used to close the browser window opened to post to wall/send to friends
-  get "/close" do
-    "<body onload='window.close();'/>"
-  end
-
   get "/sign_out" do
-    session[:access_token] = nil
+    session["access_token"] = nil
     redirect '/'
   end
 
   get "/auth/facebook" do
-    session[:access_token] = nil
+    session["access_token"] = nil
     redirect authenticator.url_for_oauth_code(:permissions => FACEBOOK_SCOPE)
   end
 
   get "/auth/facebook/callback" do
-    session[:access_token] = authenticator.get_access_token(params[:code])
+    session["access_token"] = authenticator.get_access_token(params[:code])
+    @logger.info ("OK Session is #{env['rack.session'].inspect}")
     redirect '/'
   end
 

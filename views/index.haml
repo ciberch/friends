@@ -14,26 +14,61 @@
   .grid_5
     %form#search_form{:action => "/search"}
       %h3 For Me
-      %span=@user.inspect
-      %h3 For My Friends
-      -@friends.each do |friend|
-        %span=friend.inspect
-
+      -if @user
+        .user
+          .avatar
+            %img{:src => "http://graph.facebook.com/#{@user["id"]}/picture"}
+          .desc
+            %p.name=@user["name"]
+            %p.location=@user["location"]["name"]
+            %p.job=@user['job']
+      .clear
       %label Keyword
       %input.search_box{:name =>"q", :type => "text", :value => params['q']}
       %p.orange-button
         %a{:href => "javascript:search();"} Find Summer Jobs
+      %h3 For My Friends < 30
+      -if @friends
+        .friends
+          -@friends.each do |friend|
+            .user
+              .avatar
+                %img{:src => friend["pic_square"]}
+              .desc
+                %p.name=friend['name']
+                %p.location=friend["location"]
+                %p.job=friend['job']
+            .clear
+      %h3 For My Friends > 30
+        -if @older_friends and @older_friends.count > 0
+          .friends
+            -@older_friends.each do |friend|
+              .user
+                .avatar
+                  %img{:src => friend["pic_square"]}
+                .desc
+                  %p.name=friend['name']
+                  %p.location=friend["location"]
+                  %p.job=friend['job']
+              .clear
 
   .grid_6
     %h3{:style => "margin-bottom: 0px"}=@title
-    %span{:style => "font-style:italic; margin-top: 0px"}  with Job Posting Schema
-    %ul
+    %span{:style => "font-style:italic; margin-top: 0px"}  drag and drop Jobs !
+    %ul.jobs
       -@jobs.each do |job|
         %li{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
           %meta{:itemprop=>"specialCommitments", :content=> job.specialcommitments}
           %a{:itemprop => "url", :href =>job.url}
             %strong{:itemtype => "title"}=job.title
-          %span{:itemprop => "description"}=job.description
+          -if job.industry
+            %p
+              %label Industry
+              %span{:itemprop => "industry"}=job.industry
+          -if job.description
+            %p
+              %label Description
+              %span{:itemprop => "description"}=job.description
           %p.datetime
             %label Date Posted:
             %span{:itemprop => "datePosted"}=job.dateposted

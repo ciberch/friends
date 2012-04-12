@@ -506,3 +506,35 @@ p.orange-button {
 .datetime label {
     color: #ec6129;
 }
+
+.friends {
+    max-height: 400px;
+    overflow: scroll;
+}
+.user {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.user, .user .avatar, .user .desc {
+    float: left;
+    display: inline;
+}
+
+.user .avatar {
+    width: 20%;
+}
+
+.user .desc {
+    width: 80%;
+}
+
+.name {
+    font-weight: bold;
+}
+
+.user p{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+

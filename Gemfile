@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 
 gem "sinatra"
+gem "thin"
 gem "ruby-hmac"
 gem "json"
 gem "haml"

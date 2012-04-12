@@ -40,17 +40,17 @@
                 %p.job=friend['job']
             .clear
       %h3 For My Friends > 30
-        -if @older_friends and @older_friends.count > 0
-          .friends
-            -@older_friends.each do |friend|
-              .user
-                .avatar
-                  %img{:src => friend["pic_square"]}
-                .desc
-                  %p.name=friend['name']
-                  %p.location=friend["location"]
-                  %p.job=friend['job']
-              .clear
+      -if @older_friends and @older_friends.count > 0
+        .friends
+          -@older_friends.each do |friend|
+            .user
+              .avatar
+                %img{:src => friend["pic_square"]}
+              .desc
+                %p.name=friend['name']
+                %p.location=friend["location"]
+                %p.job=friend['job']
+            .clear
 
   .grid_6
     %h3{:style => "margin-bottom: 0px"}=@title

@@ -54,11 +54,13 @@ class SummerJobsApp < Sinatra::Base
   end
 
   helpers do
-    def get_jobs(query='vmware')
+    def get_jobs(query, locality, region)
       @jobs = []
       page = params['page'].to_i || 1
       page = 1 if page < 1
-      options = {:format => "'json'", :query => "'#{query}'", :region => "", :locality => "", :skipCount => 1 + (10 * (page-1))}
+      region = region ? "'#{region}'" : ''
+      locality = locality ? "'#{locality}'" : ''
+      options = {:format => "'json'", :query => "'#{query}'", :region => region, :locality => locality, :skipCount => 1 + (10 * (page-1))}
 
       @dol_request.call_api('SummerJobs/getJobsListing', options) do |results, error|
         if error
@@ -118,9 +120,6 @@ class SummerJobsApp < Sinatra::Base
 
 
   before do
-    @appid = ENV['facebook_app_id']
-    @appsecret = ENV['facebook_app_secret']
-    @oauth = Koala::Facebook::OAuth.new(@appid, @appsecret)
     @description = "A new call-to-action for businesses, non-profits, and government to provide pathways to employment for low-income and disconnected youth in the summer of 2012"
     @context = DOL::DataContext.new('http://api.dol.gov', ENV['usdol_token'], ENV['usdol_secret'])
     @dol_request = DOL::DataRequest.new(@context)
@@ -128,6 +127,10 @@ class SummerJobsApp < Sinatra::Base
   end
 
   post "/" do
+    @appid = ENV['facebook_app_id']
+    @appsecret = ENV['facebook_app_secret']
+    @oauth = Koala::Facebook::OAuth.new(@appid, @appsecret)
+
     signed_request = @oauth.parse_signed_request(params["signed_request"])
     @logger.info("Got POST with #{signed_request}")
     redirect "/"
@@ -137,17 +140,26 @@ class SummerJobsApp < Sinatra::Base
     @friends = []
     @user = nil
 
+    @appid = ENV['facebook_app_id']
+    @appsecret = ENV['facebook_app_secret']
+    @oauth = Koala::Facebook::OAuth.new(@appid, @appsecret)
+
     if session and session["access_token"]
       @graph  = Koala::Facebook::API.new(session["access_token"])
       @user    = @graph.get_object("me")
       add_job_string!(@user)
+      unless params['state']
+        params['city'], params['state'] = @user["location"]["name"].split(", ")
+      end
       friends_key = "facebook/#{@user["id"]}/friends"
       friends_fql = nil
       if @redis.exists(friends_key)
         friends_fql = JSON.parse(@redis.get(friends_key))
+        @logger.info("Got friends from redis")
       else
         friends_fql = @graph.fql_query('SELECT current_location, work, uid, name, birthday_date, is_app_user, pic_square FROM user WHERE (uid IN (SELECT uid2 FROM friend WHERE uid1 = me())) order by name')
         @redis.set(friends_key, friends_fql.to_json)
+        @redis.expire(friends_key, 60 * 60 * 4)  # 4 hours
       end
       @friends = []
       @older_friends = []
@@ -165,30 +177,30 @@ class SummerJobsApp < Sinatra::Base
           end
         end
       end
+      params['q'] = @user['job'] ? @user['job'].gsub(/ \@/, "") : 'fun'
       # query jobs for friends
-      @jobs = get_jobs()
+      @default_search = "/search?q=#{params['q']}&city=#{params['city']}&state=#{params['state']}"
+      @full_url = url_for("/", :full)
+      @image = url_for("/images/summerjobs.png", :full)
+      @title = "Summer Jobs+ 2012"
+      haml :index
     else
       @logger.info("We dont have an access token")
       redirect "/auth/facebook"
     end
-
-    @full_url = url_for("/", :full)
-    @image = url_for("/images/summerjobs.png", :full)
-    @title = "Summer Jobs+ 2012"
-    haml :index
   end
 
   get "/search" do
     @full_url = url_for("/search", :full)
     @title = "Search results for #{params['q']}"
-    @jobs = get_jobs(params['q'])
-    haml :index
+    @jobs = get_jobs(params['q'], params['city'], params['state'])
+    haml :jobs, :layout => :"simple-layout"
   end
 
   get "/search.json" do
     @full_url = url_for("/search", :full)
     @title = "Search results for #{params['q']}"
-    @jobs = get_jobs(params['q'])
+    @jobs = get_jobs(params['q'], params['city'], params['state'])
     @jobs.to_json
   end
 

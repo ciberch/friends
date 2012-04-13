@@ -1,0 +1,11 @@
+%html
+  %head
+    %link{:rel=>'stylesheet', :href=>'/stylesheets/style.css', :type => "text/css"}
+    %title
+      = @title
+  %body.jobs
+    .container_12
+      .grid_6.jobs_list
+        =yield
+      .grid_6
+        %span &nbsp;

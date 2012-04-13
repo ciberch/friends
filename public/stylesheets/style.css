@@ -383,6 +383,8 @@ body {
   font-family: 'Helvetica Neue', "Helvetica Neue Light", Helvetica;
 }
 
+body.jobs{background-color:white}
+
 .content {
     border-radius: 9px;
     border-style: solid;
@@ -536,5 +538,22 @@ p.orange-button {
 .user p{
     margin-top: 2px;
     margin-bottom: 2px;
+}
+
+.grid_7.jobs {
+    margin: 0;
+}
+#jobs_frame{
+ width: 100%;
+ height: 900px;
+ border: none;
+}
+
+.jobs_list{
+    background-color: white;
+}
+
+ul.jobs {
+    margin: 10px;
 }
 

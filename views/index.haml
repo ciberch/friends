@@ -12,7 +12,7 @@
   .clear
 
   .grid_5
-    %form#search_form{:action => "/search"}
+    %form#search_form{:action => "/search", :target => "jobs"}
       %h3 For Me
       -if @user
         .user
@@ -23,8 +23,14 @@
             %p.location=@user["location"]["name"]
             %p.job=@user['job']
       .clear
-      %label Keyword
-      %input.search_box{:name =>"q", :type => "text", :value => params['q']}
+      %p
+        %label Keyword
+        %input.search_box{:name =>"q", :type => "text", :value => params['q']}
+      %p
+        %label City
+        %input.location_box{:name=>"city", :type => "text", :value => params['city']}
+        %label State
+        %input.location_box{:name=>"state", :type => "text", :value => params['state']}
       %p.orange-button
         %a{:href => "javascript:search();"} Find Summer Jobs
       %h3 For My Friends < 30
@@ -52,26 +58,9 @@
                 %p.job=friend['job']
             .clear
 
-  .grid_6
-    %h3{:style => "margin-bottom: 0px"}=@title
-    %span{:style => "font-style:italic; margin-top: 0px"}  drag and drop Jobs !
-    %ul.jobs
-      -@jobs.each do |job|
-        %li{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
-          %meta{:itemprop=>"specialCommitments", :content=> job.specialcommitments}
-          %a{:itemprop => "url", :href =>job.url}
-            %strong{:itemtype => "title"}=job.title
-          -if job.industry
-            %p
-              %label Industry
-              %span{:itemprop => "industry"}=job.industry
-          -if job.description
-            %p
-              %label Description
-              %span{:itemprop => "description"}=job.description
-          %p.datetime
-            %label Date Posted:
-            %span{:itemprop => "datePosted"}=job.dateposted
+  .grid_7.jobs
+    %iframe#jobs_frame{:src => @default_search, :name => "jobs"}
+
   .clear
 
   .employers
@@ -94,6 +83,8 @@
       var form = document.getElementById("search_form");
       form.submit();
     }
+
+
 
 
 

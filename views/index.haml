@@ -11,7 +11,7 @@
 
   .clear
 
-  .grid_5
+  .grid_6
     %form#search_form{:action => "/search", :target => "jobs"}
       %h3 For Me
       -if @user
@@ -33,11 +33,11 @@
         %input.location_box{:name=>"state", :type => "text", :value => params['state']}
       %p.orange-button
         %a{:href => "javascript:search();"} Find Summer Jobs
-      %h3 For My Friends < 30
-      -if @friends
+      -if @friends and @friends.count > 0
+        %h3 For My Friends < 30
         .friends
           -@friends.each do |friend|
-            .user
+            %a.user{:href}
               .avatar
                 %img{:src => friend["pic_square"]}
               .desc
@@ -45,8 +45,8 @@
                 %p.location=friend["location"]
                 %p.job=friend['job']
             .clear
-      %h3 For My Friends > 30
       -if @older_friends and @older_friends.count > 0
+        %h3 For My Friends > 30
         .friends
           -@older_friends.each do |friend|
             .user
@@ -58,7 +58,7 @@
                 %p.job=friend['job']
             .clear
 
-  .grid_7.jobs
+  .grid_6.jobs
     %iframe#jobs_frame{:src => @default_search, :name => "jobs"}
 
   .clear

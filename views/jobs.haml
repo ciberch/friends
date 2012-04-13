@@ -1,18 +1,21 @@
 %h3{:style => "margin-bottom: 0px"}=@title
 %ul.jobs
-  -@jobs.each do |job|
-    %li{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
-      %meta{:itemprop=>"specialCommitments", :content=> job.specialcommitments}
-      %a{:itemprop => "url", :href =>job.url}
-        %strong{:itemtype => "title"}=job.title
-      -if job.industry
-        %p
-          %label Industry
-          %span{:itemprop => "industry"}=job.industry
-      -if job.description
-        %p
-          %label Description
-          %span{:itemprop => "description"}=job.description
-      %p.datetime
-        %label Date Posted:
-        %span{:itemprop => "datePosted"}=job.dateposted
+  -if @jobs.count > 0
+    -@jobs.each do |job|
+      %li{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
+        %meta{:itemprop=>"specialCommitments", :content=> job.specialcommitments}
+        %a{:itemprop => "url", :href =>job.url}
+          %strong{:itemtype => "title"}=job.title
+        -if job.industry
+          %p
+            %label Industry
+            %span{:itemprop => "industry"}=job.industry
+        -if job.description
+          %p
+            %label Description
+            %span{:itemprop => "description"}=job.description
+        %p.datetime
+          %label Date Posted:
+          %span{:itemprop => "datePosted"}=job.dateposted
+  -else
+    %p No results found. Please try again

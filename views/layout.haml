@@ -6,8 +6,10 @@
     %meta{:property => 'og:type', :content => 'profile'}
     %meta{:property => 'og:image', :content => @image}
     %meta{:property => 'og:url', :content => @full_url}
+    %script{:src=>"/js/jquery-1.7.1.min.js"}
     %meta{:property => 'og:description', :content => @description}
     %meta{:prefix=>"fb:http://ogp.me/ns/fb#", :property => "fb:app_id", :content=> @appid}
+    %link{:rel=>'stylesheet', :href=>'/stylesheets/bootstrap.css', :type => "text/css"}
     %link{:rel=>'stylesheet', :href=>'/stylesheets/style.css', :type => "text/css"}
   %body
     #fb-root
@@ -19,7 +21,7 @@
        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=#{@appid}";
        fjs.parentNode.insertBefore(js, fjs);
        }(document, 'script', 'facebook-jssdk'));
-    .container_12
+    .content.container
       %a{:href=>"http://cloudfoundry.com"}
         %img{:style=>"position: absolute; top: 0; left: 50; border: 0;", :src=>"/images/badge_CF.png", :alt=>"Clone me on Cloud Foundry"}
       %a{:href=>"https://github.com/ciberch/friends"}

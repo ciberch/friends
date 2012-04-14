@@ -1,21 +1,24 @@
-%h3{:style => "margin-bottom: 0px"}=@title
-%ul.jobs
+%table.table.table-striped.jobs.table-bordered
   -if @jobs.count > 0
+    %thead
+      %tr
+        %td{:colspan => 2}
+          %h3{:style => "margin-bottom: 0px"}=@title
     -@jobs.each do |job|
-      %li{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
+      %tr{:itemscope =>"itemscope", :itemtype=>"http://schema.org/JobPosting"}
         %meta{:itemprop=>"specialCommitments", :content=> job.specialcommitments}
-        %a{:itemprop => "url", :href =>job.url}
-          %strong{:itemtype => "title"}=job.title
-        -if job.industry
-          %p
-            %label Industry
-            %span{:itemprop => "industry"}=job.industry
-        -if job.description
-          %p
-            %label Description
-            %span{:itemprop => "description"}=job.description
-        %p.datetime
-          %label Date Posted:
-          %span{:itemprop => "datePosted"}=job.dateposted
+        %td
+          %a{:itemprop => "url", :href =>job.url}
+            %strong{:itemtype => "title"}=job.title
+          -if job.industry
+            %p.strong{:itemprop => "industry"}=job.industry
+          -if job.description
+            %p{:itemprop => "description"}=job.description
+          %p.datetime
+            %label Date Posted:
+            %span{:itemprop => "datePosted"}=job.dateposted
+        %td
+          %button.btn{:alt=>"Recommend to friend", :onclick => "parent.alert('Post to timeline')"}
+            %i.icon-user
   -else
     %p No results found. Please try again

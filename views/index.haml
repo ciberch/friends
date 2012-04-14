@@ -1,87 +1,115 @@
-.grid_12.content
+.row
   .somespace
-  .push_9
-    .grid_3
-      %a.usdol{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Visit the Official US DOL Website
+  .span3.offset9
+    %a.usdol{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Visit the Official US DOL Website
   .vspace
   .clear
-  .push_7
-    .grid_5
-      %p.green=@description
-
-  .clear
-
-  .grid_6
-    %form#search_form{:action => "/search", :target => "jobs"}
-      %h3 For Me
-      -if @user
-        .user
-          .avatar
-            %img{:src => "http://graph.facebook.com/#{@user["id"]}/picture"}
-          .desc
-            %p.name=@user["name"]
-            %p.location=@user["location"]["name"]
-            %p.job=@user['job']
-      .clear
-      %p
-        %label Keyword
-        %input.search_box{:name =>"q", :type => "text", :value => params['q']}
-      %p
-        %label City
-        %input.location_box{:name=>"city", :type => "text", :value => params['city']}
-        %label State
-        %input.location_box{:name=>"state", :type => "text", :value => params['state']}
-      %p.orange-button
-        %a{:href => "javascript:search();"} Find Summer Jobs
-      -if @friends and @friends.count > 0
-        %h3 For My Friends < 30
-        .friends
-          -@friends.each do |friend|
-            %a.user{:href}
-              .avatar
-                %img{:src => friend["pic_square"]}
+  .span5.offset7
+    %p.green=@description
+.somespace
+.row
+  .span6
+    %h3 For Me
+    -if @user
+      .user
+        .avatar
+          %img{:src => "http://graph.facebook.com/#{@user["id"]}/picture"}
+        .desc
+          %p.name=@user["name"]
+          %p.location=@user["location"]["name"]
+          %p.job=@user['job']
+    .clear
+    -if @friends and @friends.count > 0
+      %table.table.table-striped.table-bordered
+        %thead
+          %tr
+            %td{:colspan => 3}
+              %h3 For My Friends < 30
+        -@friends.each do |friend|
+          - job = friend['job'] || 'awesome job'
+          - url = "javascript:search_with_city('#{job}', '#{friend['current_location'] ? friend['current_location']['city'] :''}', '#{friend['current_location'] ? friend['current_location']['state'] : ''}');"
+          %tr
+            %td
+              %a.user{:href => url}
+                .avatar
+                  %img{:src => friend["pic_square"]}
+            %td
               .desc
+              %a.user{:href => url}
                 %p.name=friend['name']
                 %p.location=friend["location"]
                 %p.job=friend['job']
-            .clear
-      -if @older_friends and @older_friends.count > 0
-        %h3 For My Friends > 30
-        .friends
-          -@older_friends.each do |friend|
-            .user
-              .avatar
-                %img{:src => friend["pic_square"]}
+            %td
+              %button.btn{:alt=> "Recommend"}
+                %i.icon-star-empty
+    -if @older_friends and @older_friends.count > 0
+      %table.table.table-striped.table-bordered
+        %thead
+          %tr
+            %td{:colspan => 3}
+              %h3 For My Friends > 30
+        -@older_friends.each do |friend|
+          - job = friend['job'] || 'awesome job'
+          - url = "javascript:search_with_city('#{job}', '#{friend['current_location'] ? friend['current_location']['city'] :''}', '#{friend['current_location'] ? friend['current_location']['state'] : ''}');"
+          %tr
+            %td
+              %a.user{:href => url}
+                .avatar
+                  %img{:src => friend["pic_square"]}
+            %td
               .desc
+              %a.user{:href => url}
                 %p.name=friend['name']
                 %p.location=friend["location"]
                 %p.job=friend['job']
-            .clear
-
-  .grid_6.jobs
+            %td
+              %button.btn{:alt=> "Recommend"}
+                %i.icon-star-empty
+  .span6.jobs
+    %form.form-horizontal{:action => "/search", :target => "jobs"}
+      %h3 Job Search
+      %fieldset
+        %label.control-label Keyword
+        .controls
+          %input.input-xlarge{:id=> "q_field", :name =>"q", :type => "text", :value => params['q']}
+      %fieldset
+        %label.control-label City
+        .controls
+          %input.input-xlarge{:id=> "city_field", :name=>"city", :type => "text", :value => params['city']}
+      %fieldset
+        %label.control-label State
+        .controls
+          %input.input-xlarge{:id => "state_field", :name=>"state", :type => "text", :value => params['state']}
+      %button.btn{:type=>"submit"}Find Summer Jobs
     %iframe#jobs_frame{:src => @default_search, :name => "jobs"}
 
-  .clear
 
-  .employers
-    .grid_8
-      %h3 For Employers
-      %ul
-        %li
-          %a{:href => "http://webapps.dol.gov/DOLEvents/Event/Register/17/Summer-Jobs-Commitment-Registration", :target => "_new"} Register
-        %li
-          %a{:href => "http://www.dol.gov/summerjobs/addingopportunities.htm"} Add Jobs
-        %li
-          %a{:href => "http://www.dol.gov/summerjobs/employerfaqs.htm"} Answers
-        %li
-          %a{:href => "http://www.dol.gov/summerjobs/partners.htm"} Who Else ?
-        %li
-          %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn...
+.row.employers
+  .span8.push4
+    %h3 For Employers
+    %ul
+      %li
+        %a{:href => "http://webapps.dol.gov/DOLEvents/Event/Register/17/Summer-Jobs-Commitment-Registration", :target => "_new"} Register
+      %li
+        %a{:href => "http://www.dol.gov/summerjobs/addingopportunities.htm"} Add Jobs
+      %li
+        %a{:href => "http://www.dol.gov/summerjobs/employerfaqs.htm"} Answers
+      %li
+        %a{:href => "http://www.dol.gov/summerjobs/partners.htm"} Who Else ?
+      %li
+        %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn...
 
   :javascript
     function search() {
-      var form = document.getElementById("search_form");
-      form.submit();
+      $("#search_form").submit();
+    }
+
+    function search_with_city(term, city, state) {
+      $("#q_field").val(term);
+      $("#city_field").val(city);
+      $("#state_field").val(state);
+
+      $("#search_form").submit();
     }
 
 

@@ -1,11 +1,12 @@
 %html
   %head
+    %link{:rel=>'stylesheet', :href=>'/stylesheets/bootstrap.css', :type => "text/css"}
+    %link{:rel=>'stylesheet', :href=>'/stylesheets/bootstrap-responsive.css', :type => "text/css"}
     %link{:rel=>'stylesheet', :href=>'/stylesheets/style.css', :type => "text/css"}
     %title
       = @title
   %body.jobs
-    .container_12
-      .grid_6.jobs_list
-        =yield
-      .grid_6
-        %span &nbsp;
+    .container-fluid
+      .row-fluid
+        .span12.jobs_list
+          =yield

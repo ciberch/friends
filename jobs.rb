@@ -151,6 +151,7 @@ class SummerJobsApp < Sinatra::Base
         job1 = user_hash["work"].first
         user_hash["job"] = job1["position"] ? job1["position"]["name"] + " @ " : ""
         user_hash["job"] += job1["employer"]["name"]
+        user_hash["job_location"]  = job1["location"]
       end
     end
   end

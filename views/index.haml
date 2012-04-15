@@ -1,15 +1,14 @@
 .row
-  .somespace
-  .span3.offset9
-    %a.usdol{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Visit the Official US DOL Website
-  .vspace
-  .clear
-  .span5.offset7
-    %p.green=@description
-.somespace
+  .hero-unit
+    %h1 Trabaja Friends
+    %p
+      %br
+      %a.btn.btn-primary.btn-large{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Learn More
+    %p
+      %br
+      %span=@description
 .row
   .span6
-    %h3 For Me
     -if @user
       .user
         .avatar
@@ -40,7 +39,7 @@
                 %p.location=friend["location"]
                 %p.job=friend['job']
             %td
-              %button.btn{:class=> "Recommend", :uid=>friend['uid']}
+              %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
                 %i.icon-star-empty
     -if @older_friends and @older_friends.count > 0
       %table.table.table-striped.table-bordered
@@ -63,10 +62,10 @@
                 %p.location=friend["location"]
                 %p.job=friend['job']
             %td
-              %button.btn{:class=> "Recommend", :uid=>friend['uid']}
+              %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
                 %i.icon-star-empty
   .span6.jobs
-    %form.form-horizontal{:action => "/search", :target => "jobs"}
+    %form.well.form-horizontal{:action => "/search", :target => "jobs"}
       %h3 Job Search
       %fieldset
         %label.control-label Keyword
@@ -80,7 +79,8 @@
         %label.control-label State
         .controls
           %input.input-xlarge{:id => "state_field", :name=>"state", :type => "text", :value => params['state']}
-      %button.btn{:type=>"submit"}Find Summer Jobs
+      %fieldset
+        %button.btn{:type=>"submit"}Find Summer Jobs
     %iframe#jobs_frame{:src => @default_search, :name => "jobs"}
 
 
@@ -98,9 +98,8 @@
         %a{:href => "http://www.dol.gov/summerjobs/partners.htm"} Who Else ?
       %li
         %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn...
-%script{:src=>"/js/my.js"}
   :javascript
-   
+    var app_id = '#{app_id}';
     function search() {
       $("#search_form").submit();
     }
@@ -112,7 +111,7 @@
 
       $("#search_form").submit();
     }
-
+%script{:src=>"/js/my.js"}
 
 
 

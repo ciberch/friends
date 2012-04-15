@@ -20,9 +20,20 @@ strong {
 }
 
 body {
-  background-color: #55c0c7;
+  background-color: #0792d9;
   color: #444;
   font-family: 'Helvetica Neue', "Helvetica Neue Light", Helvetica;
+}
+
+.hero-unit {
+    margin-bottom: 10px;
+    padding: 30px;
+    background: url(/images/WashingtonSmall.jpg) no-repeat;
+    border-radius: 5px;
+    color: white;
+}
+.hero-unit p {
+    width: 80%;
 }
 
 body.jobs{background-color:white}
@@ -32,7 +43,7 @@ body.jobs{background-color:white}
     border-style: solid;
     border-width: 10px;
     border-color: #fff;
-    background: #fff url(/images/summer-jobs.jpg) no-repeat top center;
+    background-color:white
 }
 
 .vspace {

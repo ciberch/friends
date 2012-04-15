@@ -22,13 +22,11 @@
 
 
     $(".Recommend").on("click",function(event){
-      console.log($(this).attr("uid"));
       var user_id = $(this).attr("uid");
-      console.log(user_id);
-      FB.ui({method: 'apprequests',
-      message: 'Find the right job here',
-      to: user_id,
-      }, requestCallback);
+
+      var selectButton = $(this).children(0);
+      selectButton.toggleClass('icon-star-empty').toggleClass('icon-star');
+      candidate = user_id;
     });
 
 
@@ -37,9 +35,13 @@
     }
 
     $(".Recommend_to_friend").on("click",function(event){
-         FB.ui({
-          method: 'send',
-          name: 'Check out this awesome job',
-          link: $(this).attr("mylink")
-          });
+        parent.FB.ui({
+          to: parent.candidate,
+          method: 'feed',
+          link: $(this).attr("mylink"),
+          picture: parent.site_image,
+          name: 'Trabaja Friends',
+          caption: 'Find a Summer Job',
+          description: 'You have been chosen as an excellent candidate for this job'
+        }, function(response) {console.log("Saved as post: " + response['post_id'])});
     });

@@ -100,6 +100,9 @@
         %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn...
   :javascript
     var app_id = '#{app_id}';
+    var candidate = null;
+    var site_image = '#{@image}';
+
     function search() {
       $("#search_form").submit();
     }

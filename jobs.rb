@@ -142,8 +142,12 @@ class SummerJobsApp < Sinatra::Base
        "#{scheme}://#{host}#{path}"
      end
 
+    def app_id
+      ENV['facebook_app_id']
+    end
+
     def authenticator
-      @authenticator ||= Koala::Facebook::OAuth.new(ENV['facebook_app_id'], ENV['facebook_app_secret'], url("/auth/facebook/callback"))
+      @authenticator ||= Koala::Facebook::OAuth.new(app_id, ENV['facebook_app_secret'], url("/auth/facebook/callback"))
     end
 
     def add_job_string!(user_hash)
@@ -165,7 +169,7 @@ class SummerJobsApp < Sinatra::Base
   end
 
   post "/" do
-    @oauth = Koala::Facebook::OAuth.new(ENV['facebook_app_id'], ENV['facebook_app_secret'])
+    @oauth = Koala::Facebook::OAuth.new(app_id, ENV['facebook_app_secret'])
 
     signed_request = @oauth.parse_signed_request(params["signed_request"])
     @logger.info("Got POST with #{signed_request}")

@@ -1,15 +1,14 @@
 .row
-  .somespace
-  .span3.offset9
-    %a.usdol{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Visit the Official US DOL Website
-  .vspace
-  .clear
-  .span5.offset7
-    %p.green=@description
-.somespace
+  .hero-unit
+    %h1 Trabaja Friends
+    %p
+      %br
+      %a.btn.btn-primary.btn-large{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Learn More
+    %p
+      %br
+      %span=@description
 .row
   .span6
-    %h3 For Me
     -if @user
       .user
         .avatar
@@ -40,7 +39,7 @@
                 %p.location=friend["location"]
                 %p.job=friend['job']
             %td
-              %button.btn{:alt=> "Recommend", :uid=>friend['uid']}
+              %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
                 %i.icon-star-empty
     -if @older_friends and @older_friends.count > 0
       %table.table.table-striped.table-bordered
@@ -63,10 +62,10 @@
                 %p.location=friend["location"]
                 %p.job=friend['job']
             %td
-              %button.btn{:alt=> "Recommend", :uid=>friend['uid']}
+              %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
                 %i.icon-star-empty
   .span6.jobs
-    %form.form-horizontal{:action => "/search", :target => "jobs"}
+    %form.well.form-horizontal{:action => "/search", :target => "jobs"}
       %h3 Job Search
       %fieldset
         %label.control-label Keyword
@@ -80,7 +79,8 @@
         %label.control-label State
         .controls
           %input.input-xlarge{:id => "state_field", :name=>"state", :type => "text", :value => params['state']}
-      %button.btn{:type=>"submit"}Find Summer Jobs
+      %fieldset
+        %button.btn{:type=>"submit"}Find Summer Jobs
     %iframe#jobs_frame{:src => @default_search, :name => "jobs"}
 
 
@@ -98,41 +98,8 @@
         %a{:href => "http://www.dol.gov/summerjobs/partners.htm"} Who Else ?
       %li
         %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn...
-
   :javascript
-    FB.init({
-        appId      : '316154225118670', // App ID
-        channelUrl : '//friends.cloudfoundry.com/channel.html', // Channel File
-        status     : true, // check login status
-        cookie     : true, // enable cookies to allow the server to access the session
-        xfbml      : true  // parse XFBML
-      });
-
-      // Additional initialization code here
-    };
-
-    // Load the SDK Asynchronously
-    (function(d){
-       var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-       if (d.getElementById(id)) {return;}
-       js = d.createElement('script'); js.id = id; js.async = true;
-       js.src = "//connect.facebook.net/en_US/all.js";
-       ref.parentNode.insertBefore(js, ref);
-     }(document));
-      
-
-    $(".btn").on("click",function(event){
-      var user_id = $(this).attr("uid");
-      FB.ui({method: 'apprequests',
-      message: 'Find the right job here',
-      to: user_id, 
-      }, requestCallback);
-    });
-
-    function requestCallback(response) {
-        // Handle callback here
-    }
-
+    var app_id = '#{app_id}';
     function search() {
       $("#search_form").submit();
     }
@@ -144,7 +111,7 @@
 
       $("#search_form").submit();
     }
-
+%script{:src=>"/js/my.js"}
 
 
 

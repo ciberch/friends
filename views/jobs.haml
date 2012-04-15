@@ -18,7 +18,8 @@
             %label Date Posted:
             %span{:itemprop => "datePosted"}=job.dateposted
         %td
-          %button.btn{:alt=>"Recommend to friend", :onclick => "parent.alert('Post to timeline')"}
+          %button.btn{:class=>"Recommend_to_friend", :mylink => job.link}
             %i.icon-user
   -else
     %p No results found. Please try again
+%script{:src=>"/js/my.js"}

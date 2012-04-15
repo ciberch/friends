@@ -37,10 +37,9 @@
     }
 
     $(".Recommend_to_friend").on("click",function(event){
-         console.log($(this).attr("mylink"));
          FB.ui({
           method: 'send',
           name: 'Check out this awesome job',
-          link: $(this).attr("mylink"),
+          link: $(this).attr("mylink")
           });
     });

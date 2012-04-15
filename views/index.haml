@@ -63,7 +63,7 @@
                 %p.location=friend["location"]
                 %p.job=friend['job']
             %td
-              %button.btn{:alt=> "Recommend",, :uid=>friend['uid']}
+              %button.btn{:alt=> "Recommend", :uid=>friend['uid']}
                 %i.icon-star-empty
   .span6.jobs
     %form.form-horizontal{:action => "/search", :target => "jobs"}
@@ -124,7 +124,7 @@
     $(".btn").on("click",function(event){
       var user_id = $(this).attr("uid");
       FB.ui({method: 'apprequests',
-      message: 'My Great Request',
+      message: 'Find the right job here',
       to: user_id, 
       }, requestCallback);
     });

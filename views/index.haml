@@ -40,7 +40,7 @@
                 %p.location=friend["location"]
                 %p.job=friend['job']
             %td
-              %button.btn{:alt=> "Recommend", :uid=>friend['uid']}
+              %button.btn{:class=> "Recommend", :uid=>friend['uid']}
                 %i.icon-star-empty
     -if @older_friends and @older_friends.count > 0
       %table.table.table-striped.table-bordered
@@ -63,7 +63,7 @@
                 %p.location=friend["location"]
                 %p.job=friend['job']
             %td
-              %button.btn{:alt=> "Recommend", :uid=>friend['uid']}
+              %button.btn{:class=> "Recommend", :uid=>friend['uid']}
                 %i.icon-star-empty
   .span6.jobs
     %form.form-horizontal{:action => "/search", :target => "jobs"}
@@ -121,7 +121,7 @@
      }(document));
       
 
-    $(".btn").on("click",function(event){
+    $(".Recommend").on("click",function(event){
       var user_id = $(this).attr("uid");
       FB.ui({method: 'apprequests',
       message: 'Find the right job here',

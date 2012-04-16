@@ -4,6 +4,7 @@
     %p
       %br
       %a.btn.btn-primary.btn-large{:href=>"http://www.dol.gov/summerjobs/Employers.htm"} Learn More
+      %a.btn.btn-primary.btn-large#invite Invite Friends
     %p
       %br
       %span=@description
@@ -101,6 +102,7 @@
   :javascript
     var app_id = '#{app_id}';
     var candidate = null;
+    var user_ids = [];
     var site_image = '#{@image}';
 
     function search() {

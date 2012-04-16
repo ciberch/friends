@@ -23,7 +23,7 @@
 
     $(".Recommend").on("click",function(event){
       var user_id = $(this).attr("uid");
-
+      user_ids.push(user_id);
       var selectButton = $(this).children(0);
       selectButton.toggleClass('icon-star-empty').toggleClass('icon-star');
       candidate = user_id;
@@ -33,6 +33,11 @@
     function requestCallback(response) {
         // Handle callback here
     }
+
+    $("#invite").on("click",function(event){
+        FB.ui({method: 'apprequests', message: 'Find the right job here', to: user_ids,link: $(this).attr("mylink")},requestCallback);
+    });
+
 
     $(".Recommend_to_friend").on("click",function(event){
         parent.FB.ui({

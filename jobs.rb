@@ -115,6 +115,11 @@ class SummerJobsApp < Sinatra::Base
           end
         end
       end
+      @start = params['start'] ?  params['start'].to_i  : 0
+      @end = params['end'] ? params['end'].to_i : @start.to_i + 5
+
+      friends = friends[@start..@end]
+      older_friends = older_friends[@start..@end]
       [friends, older_friends]
     end
 

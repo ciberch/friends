@@ -42,6 +42,9 @@
             %td
               %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
                 %i.icon-star-empty
+
+    %a.btn{:href=>"/?start=#{@start+5}"}More Friends...
+
     -if @older_friends and @older_friends.count > 0
       %table.table.table-striped.table-bordered
         %thead
@@ -83,22 +86,6 @@
       %fieldset
         %button.btn{:type=>"submit"}Find Summer Jobs
     %iframe#jobs_frame{:src => @default_search, :name => "jobs"}
-
-
-.row.employers
-  .span8.push4
-    %h3 For Employers
-    %ul
-      %li
-        %a{:href => "http://webapps.dol.gov/DOLEvents/Event/Register/17/Summer-Jobs-Commitment-Registration", :target => "_new"} Register
-      %li
-        %a{:href => "http://www.dol.gov/summerjobs/addingopportunities.htm"} Add Jobs
-      %li
-        %a{:href => "http://www.dol.gov/summerjobs/employerfaqs.htm"} Answers
-      %li
-        %a{:href => "http://www.dol.gov/summerjobs/partners.htm"} Who Else ?
-      %li
-        %a{:href => "http://www.dol.gov/summerjobs/pdf/Toolkit.pdf"} Learn...
   :javascript
     var app_id = '#{app_id}';
     var candidate = null;
@@ -117,6 +104,7 @@
       $("#search_form").submit();
     }
 %script{:src=>"/js/my.js"}
+
 
 
 

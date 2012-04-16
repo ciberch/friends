@@ -24,9 +24,12 @@
 
     $(".Recommend").on("click",function(event){
       var user_id = $(this).attr("uid");
-      user_ids.push(user_id);
       var selectButton = $(this).children(0);
       selectButton.toggleClass('icon-star-empty').toggleClass('icon-star');
+      if (prevButton != null) {
+        prevButton.toggleClass('icon-star-empty').toggleClass('icon-star');
+      }
+      prevButton = selectButton;
       candidate = user_id;
     });
 
@@ -36,9 +39,8 @@
     }
 
     $("#invite").on("click",function(event){
-        FB.ui({method: 'apprequests', message: 'Find the right job here', to: user_ids,link: $(this).attr("mylink")},requestCallback);
+        FB.ui({method: 'apprequests', message: 'Find the right job here', link: $(this).attr("mylink")},requestCallback);
     });
-
 
     $(".Recommend_to_friend").on("click",function(event){
         parent.FB.ui({

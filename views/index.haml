@@ -20,54 +20,49 @@
           %p.job=@user['job']
     .clear
     -if @friends and @friends.count > 0
-      %table.table.table-striped.table-bordered
-        %thead
-          %tr
-            %td{:colspan => 3}
-              %h3 For My Friends < 30
-        -@friends.each do |friend|
-          - job = friend['job'] || 'awesome job'
-          - url = "javascript:search_with_city('#{job}', '#{friend['current_location'] ? friend['current_location']['city'] :''}', '#{friend['current_location'] ? friend['current_location']['state'] : ''}');"
-          %tr
-            %td
-              %a.user{:href => url}
-                .avatar
-                  %img{:src => friend["pic_square"]}
-            %td
-              .desc
-              %a.user{:href => url}
-                %p.name=friend['name']
-                %p.location=friend["location"]
-                %p.job=friend['job']
-            %td
-              %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
-                %i.icon-star-empty
+      %h3 For My Friends < 30
+      .mycs
+        %table.table.table-striped.table-bordered
+          -@friends.each do |friend|
+            - job = friend['job'] || 'awesome job'
+            - url = "javascript:search_with_city('#{job}', '#{friend['current_location'] ? friend['current_location']['city'] :''}', '#{friend['current_location'] ? friend['current_location']['state'] : ''}');"
+            %tr
+              %td
+                %a.user{:href => url}
+                  .avatar
+                    %img{:src => friend["pic_square"]}
+              %td
+                .desc
+                %a.user{:href => url}
+                  %p.name=friend['name']
+                  %p.location=friend["location"]
+                  %p.job=friend['job']
+              %td
+                %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
+                  %i.icon-star-empty
 
-    %a.btn{:href=>"/?start=#{@start+5}"}More Friends...
 
     -if @older_friends and @older_friends.count > 0
-      %table.table.table-striped.table-bordered
-        %thead
-          %tr
-            %td{:colspan => 3}
-              %h3 For My Friends > 30
-        -@older_friends.each do |friend|
-          - job = friend['job'] || 'awesome job'
-          - url = "javascript:search_with_city('#{job}', '#{friend['current_location'] ? friend['current_location']['city'] :''}', '#{friend['current_location'] ? friend['current_location']['state'] : ''}');"
-          %tr
-            %td
-              %a.user{:href => url}
-                .avatar
-                  %img{:src => friend["pic_square"]}
-            %td
-              .desc
-              %a.user{:href => url}
-                %p.name=friend['name']
-                %p.location=friend["location"]
-                %p.job=friend['job']
-            %td
-              %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
-                %i.icon-star-empty
+      %h3 For My Friends > 30
+      .mycs
+        %table.table.table-striped.table-bordered
+          -@older_friends.each do |friend|
+            - job = friend['job'] || 'awesome job'
+            - url = "javascript:search_with_city('#{job}', '#{friend['current_location'] ? friend['current_location']['city'] :''}', '#{friend['current_location'] ? friend['current_location']['state'] : ''}');"
+            %tr
+              %td
+                %a.user{:href => url}
+                  .avatar
+                    %img{:src => friend["pic_square"]}
+              %td
+                .desc
+                %a.user{:href => url}
+                  %p.name=friend['name']
+                  %p.location=friend["location"]
+                  %p.job=friend['job']
+              %td
+                %button.btn{:alt => "Recommend", :class=> "Recommend", :uid=>friend['uid']}
+                  %i.icon-star-empty
   .span6.jobs
     %form.well.form-horizontal{:action => "/search", :target => "jobs"}
       %h3 Job Search

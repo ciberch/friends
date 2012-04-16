@@ -40,8 +40,8 @@
           method: 'feed',
           link: $(this).attr("mylink"),
           picture: parent.site_image,
-          name: 'Trabaja Friends',
-          caption: 'Find a Summer Job',
+          name: $(this).val(),
+          caption: 'Check out this job',
           description: 'You have been chosen as an excellent candidate for this job'
         }, function(response) {console.log("Saved as post: " + response['post_id'])});
     });

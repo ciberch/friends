@@ -8,7 +8,7 @@
     %meta{:property => 'og:url', :content => @full_url}
     %script{:src=>"/js/jquery-1.7.1.min.js"}
     %meta{:property => 'og:description', :content => @description}
-    %meta{:prefix=>"fb:http://ogp.me/ns/fb#", :property => "fb:app_id", :content=> @appid}
+    %meta{:prefix=>"fb:http://ogp.me/ns/fb#", :property => "fb:app_id", :content=> app_id}
     %link{:rel=>'stylesheet', :href=>'/stylesheets/bootstrap.css', :type => "text/css"}
     %link{:rel=>'stylesheet', :href=>'/stylesheets/style.css', :type => "text/css"}
   %body
@@ -18,7 +18,7 @@
        var js, fjs = d.getElementsByTagName(s)[0];
        if (d.getElementById(id)) return;
        js = d.createElement(s); js.id = id;
-       js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=#{@appid}";
+       js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=#{app_id}";
        fjs.parentNode.insertBefore(js, fjs);
        }(document, 'script', 'facebook-jssdk'));
     .content.container

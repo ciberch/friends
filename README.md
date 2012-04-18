@@ -43,6 +43,7 @@ Set facebook and US Department of Labor API keys. See Developer Resources
 
 ``` bash
 vmc env-add <app_name> facebook_app_id=23823782
+vmc env-add <app_name> facebook_app_secret=M22j2knrmrkkemrke
 vmc env-add <app_name> usdol_token=43823782
 vmc env-add <app_name> usdol_secret="shared secret"
 ```

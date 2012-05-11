@@ -16,7 +16,7 @@
           %img{:src => "http://graph.facebook.com/#{@user["id"]}/picture"}
         .desc
           %p.name=@user["name"]
-          %p.location=@user["location"]["name"]
+          %p.location="#{@user["location"]["name"] rescue ''}"
           %p.job=@user['job']
     .clear
     -if @friends and @friends.count > 0
@@ -86,8 +86,8 @@
     var candidate = null;
     var prevButton = null;
     var site_image = '#{@image}';
-    var prevButton = null;  
-   
+    var prevButton = null;
+
     function search() {
       $("#search_form").submit();
     }

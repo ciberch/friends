@@ -1,7 +1,7 @@
 ---
 applications:
   .:
-    name: friends
+    name: mongo-friends
     url: ${name}.${target-base}
     framework:
       name: rack

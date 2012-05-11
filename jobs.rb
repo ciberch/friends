@@ -186,7 +186,11 @@ class SummerJobsApp < Sinatra::Base
       @user    = @graph.get_object("me")
       add_job_string!(@user)
       unless params['state']
-        params['city'], params['state'] = @user["location"]["name"].split(", ")
+        if @user["location"] and @user["location"]["name"]
+          params['city'], params['state'] = @user["location"]["name"].split(", ")
+        else
+          @logger.info("Not expected location #{@user["location"].inspect}")
+        end
       end
       @friends, @older_friends = get_friends(@user, @graph)
       params['q'] = @user['job'] ? @user['job'].gsub(/ \@/, "") : 'fun'
